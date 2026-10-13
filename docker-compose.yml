@@ -1,0 +1,36 @@
+# Runs the app against MySQL 8: docker compose up --build  ->  http://localhost:8080
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: buchhaus
+      MYSQL_USER: buchhaus
+      MYSQL_PASSWORD: ${DB_PASSWORD:-buchhaus}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ubuchhaus", "-p${DB_PASSWORD:-buchhaus}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      DB_URL: jdbc:mysql://db:3306/buchhaus?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USER: buchhaus
+      DB_PASSWORD: ${DB_PASSWORD:-buchhaus}
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-string-of-32-chars}
+      DEMO_DATA: ${DEMO_DATA:-true}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@buchhaus.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin@12345}
+    ports:
+      - "8080:8080"
+
+volumes:
+  db-data:

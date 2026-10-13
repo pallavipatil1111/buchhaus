@@ -1,0 +1,11 @@
+{
+  "name": "buchhaus-e2e",
+  "private": true,
+  "scripts": {
+    "cy:run": "cypress run",
+    "cy:open": "cypress open"
+  },
+  "devDependencies": {
+    "cypress": "^13.15.0"
+  }
+}
