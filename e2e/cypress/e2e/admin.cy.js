@@ -46,7 +46,12 @@ describe("Admin", () => {
     });
   });
 
-  it("is hidden from customers", () => {
+});
+
+// Outside the "Admin" block on purpose: its beforeEach opens /#/admin as the admin, and Cypress does
+// not reload the page when cy.visit only repeats the same URL, so the customer token would never load.
+describe("Admin pages for customers", () => {
+  it("are hidden from customers", () => {
     cy.registerFresh().then(({ token }) => {
       cy.visitAs("/#/admin", token);
       cy.contains("Admins only.");
